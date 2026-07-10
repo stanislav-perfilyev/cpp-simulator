@@ -68,5 +68,5 @@ jobs:
         run: |
           cppcheck --enable=all --error-exitcode=1 \
             --suppress=missingInclude --suppress=missingIncludeSystem \
-            --suppress=useStlAlgorithm --suppress=checkersReport \
+            --suppress=unmatchedSuppression --suppress=checkersReport \
             src/ include/ tests/
