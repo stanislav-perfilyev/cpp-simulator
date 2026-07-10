@@ -39,27 +39,3 @@ void Game::processInput(int sector)
     if (s.boot) throw BootCaught(attempts_);
     std::cout << "Empty! Try again.\n";
 }
-
-void Game::run()
-{
-    try {
-        while (true) {
-            std::cout << "Enter sector (0-" << kFieldSize - 1 << "): ";
-            int s = 0;
-            if (!(std::cin >> s)) {
-                std::cout << "Input error.\n";
-                return;
-            }
-            try {
-                processInput(s);
-            } catch (const InvalidSectorError& e) {
-                std::cout << e.what() << ". Please enter 0-"
-                          << kFieldSize - 1 << ".\n";
-            }
-        }
-    } catch (const FishCaught& fc) {
-        std::cout << "Success! Fish caught in " << fc.attempts << " attempt(s).\n";
-    } catch (const BootCaught& bc) {
-        std::cout << "Failure. Boot caught in " << bc.attempts << " attempt(s).\n";
-    }
-}

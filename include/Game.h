@@ -21,9 +21,6 @@ public:
 
     Game();
 
-    /** @brief Run the interactive game loop (reads from std::cin). */
-    void run();
-
     /**
      * @brief Process one player move.
      * @param sector Sector index in [0, kFieldSize).
