@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <istream>
+#include <ostream>
 
 Game::Game()
 {
@@ -38,4 +40,28 @@ void Game::processInput(int sector)
     if (s.fish) throw FishCaught(attempts_);
     if (s.boot) throw BootCaught(attempts_);
     std::cout << "Empty! Try again.\n";
+}
+
+void Game::run(std::istream& in, std::ostream& out)
+{
+    try {
+        while (true) {
+            out << "Enter sector (0-" << kFieldSize - 1 << "): ";
+            int s = 0;
+            if (!(in >> s)) {
+                out << "Input error.\n";
+                return;
+            }
+            try {
+                processInput(s);
+            } catch (const InvalidSectorError& e) {
+                out << e.what() << ". Please enter 0-"
+                    << kFieldSize - 1 << ".\n";
+            }
+        }
+    } catch (const FishCaught& fc) {
+        out << "Success! Fish caught in " << fc.attempts << " attempt(s).\n";
+    } catch (const BootCaught& bc) {
+        out << "Failure. Boot caught in " << bc.attempts << " attempt(s).\n";
+    }
 }

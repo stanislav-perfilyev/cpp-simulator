@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstddef>
+#include <iosfwd>
 
 /**
  * @brief Core fishing-game logic.
@@ -20,6 +21,13 @@ public:
     static constexpr int         kBootCount  = 3;
 
     Game();
+
+    /**
+     * @brief Run the interactive game loop.
+     * @param in  Input stream (use std::cin for production, std::istringstream in tests).
+     * @param out Output stream (use std::cout for production, std::ostringstream in tests).
+     */
+    void run(std::istream& in, std::ostream& out);
 
     /**
      * @brief Process one player move.

@@ -2,6 +2,8 @@
 #include "Game.h"
 #include "Exceptions.h"
 
+#include <sstream>
+
 // ── Exception hierarchy ───────────────────────────────────────────────────
 
 TEST(ExceptionHierarchy, FishCaughtIsSimulatorError) {
@@ -166,4 +168,47 @@ TEST(GameProcessInput, DoubleVisitSameSectorStillAccepted) {
             break;
         }
     }
+}
+
+// ── Game::run (injectable I/O) ────────────────────────────────────────────
+
+TEST(GameRun, ScanAllSectorsEndsWithCaughtMessage) {
+    // Feed all 9 sectors in order — game must end with "caught" message.
+    std::string input;
+    for (int i = 0; i < static_cast<int>(Game::kFieldSize); ++i)
+        input += std::to_string(i) + "\n";
+
+    std::istringstream in(input);
+    std::ostringstream out;
+    Game g;
+    g.run(in, out);
+
+    const auto result = out.str();
+    EXPECT_TRUE(result.find("caught") != std::string::npos);
+}
+
+TEST(GameRun, InvalidSectorPrintsErrorAndContinues) {
+    // Invalid sector → error message, then valid sector to end the game.
+    // Feed: -1, then all 9 sectors.
+    std::string input = "-1\n";
+    for (int i = 0; i < static_cast<int>(Game::kFieldSize); ++i)
+        input += std::to_string(i) + "\n";
+
+    std::istringstream in(input);
+    std::ostringstream out;
+    Game g;
+    g.run(in, out);
+
+    const auto result = out.str();
+    EXPECT_TRUE(result.find("Invalid") != std::string::npos);
+    EXPECT_TRUE(result.find("caught") != std::string::npos);
+}
+
+TEST(GameRun, BadInputStreamEndsGracefully) {
+    // EOF immediately → run() should print "Input error." and return.
+    std::istringstream in("");
+    std::ostringstream out;
+    Game g;
+    EXPECT_NO_THROW(g.run(in, out));
+    EXPECT_TRUE(out.str().find("Input error") != std::string::npos);
 }
