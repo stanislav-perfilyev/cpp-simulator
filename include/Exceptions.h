@@ -19,7 +19,7 @@
 class SimulatorError : public std::exception {
 public:
     explicit SimulatorError(const char* what_arg) : what_(what_arg) {}
-    explicit SimulatorError(std::string what_arg) : what_(std::move(what_arg)) {}
+    explicit SimulatorError(const std::string& what_arg) : what_(what_arg) {}
     [[nodiscard]] const char* what() const noexcept override { return what_.c_str(); }
 private:
     std::string what_;

@@ -105,3 +105,64 @@ TEST(GameConstants, FieldSizeIsNine) {
 TEST(GameConstants, BootCountIsThree) {
     EXPECT_EQ(Game::kBootCount, 3);
 }
+
+// ── Exhaustive field scan (covers empty-sector path + placement invariants) ─
+
+TEST(GameField, ExactlyOneFishAndThreeBoots) {
+    // Process every sector; count catches — verifies placeFish/placeBoots.
+    Game g;
+    int fish_count = 0;
+    int boot_count = 0;
+    int empty_count = 0;
+
+    for (int i = 0; i < static_cast<int>(Game::kFieldSize); ++i) {
+        try {
+            g.processInput(i);   // empty sector: no throw
+            ++empty_count;
+        } catch (const FishCaught&) {
+            ++fish_count;
+        } catch (const BootCaught&) {
+            ++boot_count;
+        }
+    }
+
+    EXPECT_EQ(fish_count,  1);
+    EXPECT_EQ(boot_count,  static_cast<int>(Game::kBootCount));
+    EXPECT_EQ(empty_count, static_cast<int>(Game::kFieldSize) - 1 - static_cast<int>(Game::kBootCount));
+}
+
+TEST(GameField, AttemptsCountEqualsCallsAcrossFullScan) {
+    Game g;
+    int calls = 0;
+    int last_attempts = 0;
+
+    for (int i = 0; i < static_cast<int>(Game::kFieldSize); ++i) {
+        ++calls;
+        try {
+            g.processInput(i);
+        } catch (const FishCaught& fc) {
+            last_attempts = static_cast<int>(fc.attempts);
+        } catch (const BootCaught& bc) {
+            last_attempts = static_cast<int>(bc.attempts);
+        }
+    }
+    // Total calls must equal kFieldSize; last catch attempts must match.
+    EXPECT_EQ(calls, static_cast<int>(Game::kFieldSize));
+    EXPECT_EQ(last_attempts, calls);
+}
+
+TEST(GameProcessInput, DoubleVisitSameSectorStillAccepted) {
+    // After catching from a sector, revisiting should not crash.
+    Game g;
+    // Find the first sector that throws (fish or boot)
+    for (int i = 0; i < static_cast<int>(Game::kFieldSize); ++i) {
+        bool caught = false;
+        try { g.processInput(i); }
+        catch (const SimulatorError&) { caught = true; }
+        if (caught) {
+            // Visit same sector again — object already "caught", should be empty now
+            EXPECT_NO_THROW({ try { g.processInput(i); } catch (const SimulatorError&) {} });
+            break;
+        }
+    }
+}

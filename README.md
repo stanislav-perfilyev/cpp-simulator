@@ -20,7 +20,17 @@ Project structure
 - `README.md` — this file.
 - Executable target name: `FishCatch` (set in `CMakeLists.txt`).
 
-Build (command line)
+## Architecture
+
+The project is structured into three layers:
+
+- **Domain** (`include/Fish.h`, `include/Boot.h`, `include/Sector.h`): plain value types representing pond objects.
+- **Game logic** (`src/Game.cpp`, `include/Game.h`): `Game` manages a 9-sector field, places objects randomly, and processes player input by throwing typed exceptions (`FishCaught`, `BootCaught`, `InvalidSectorError`).
+- **Exception hierarchy** (`include/Exceptions.h`): all game events derive from `SimulatorError` → `std::exception`, enabling structured catch chains.
+
+Control flow uses exceptions intentionally to signal game-ending events, keeping `processInput()` free of return codes.
+
+## Build
 1. Create build directory:
     - `mkdir build`
     - `cd build`

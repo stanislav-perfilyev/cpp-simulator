@@ -9,6 +9,10 @@ include_directories(include)
 # ── Game library (shared between app and tests) ───────────────────────────
 add_library(game_lib src/Game.cpp)
 target_include_directories(game_lib PUBLIC include)
+target_compile_options(game_lib PRIVATE
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Werror -Wpedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+)
 
 # ── Main executable ───────────────────────────────────────────────────────
 add_executable(fishing_simulator src/main.cpp)
@@ -32,6 +36,10 @@ enable_testing()
 add_executable(fishing_simulator_tests tests/test_game.cpp)
 target_link_libraries(fishing_simulator_tests PRIVATE game_lib gtest_main)
 target_include_directories(fishing_simulator_tests PRIVATE include)
+target_compile_options(fishing_simulator_tests PRIVATE
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Werror -Wpedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+)
 
 include(GoogleTest)
 gtest_discover_tests(fishing_simulator_tests)
