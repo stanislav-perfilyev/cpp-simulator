@@ -132,23 +132,24 @@ TEST(GameField, ExactlyOneFishAndThreeBoots) {
 }
 
 TEST(GameField, AttemptsCountEqualsCallsAcrossFullScan) {
+    // Each processInput() call increments the internal attempts counter.
+    // When an exception is thrown, fc.attempts / bc.attempts must equal
+    // the number of calls made so far (i + 1).
     Game g;
-    int calls = 0;
-    int last_attempts = 0;
-
+    int throws = 0;
     for (int i = 0; i < static_cast<int>(Game::kFieldSize); ++i) {
-        ++calls;
         try {
             g.processInput(i);
         } catch (const FishCaught& fc) {
-            last_attempts = static_cast<int>(fc.attempts);
+            EXPECT_EQ(fc.attempts, i + 1);
+            ++throws;
         } catch (const BootCaught& bc) {
-            last_attempts = static_cast<int>(bc.attempts);
+            EXPECT_EQ(bc.attempts, i + 1);
+            ++throws;
         }
     }
-    // Total calls must equal kFieldSize; last catch attempts must match.
-    EXPECT_EQ(calls, static_cast<int>(Game::kFieldSize));
-    EXPECT_EQ(last_attempts, calls);
+    // At least one exception in 9 sectors (1 fish + 3 boots)
+    EXPECT_GT(throws, 0);
 }
 
 TEST(GameProcessInput, DoubleVisitSameSectorStillAccepted) {

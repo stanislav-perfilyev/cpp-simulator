@@ -30,6 +30,18 @@ The project is structured into three layers:
 
 Control flow uses exceptions intentionally to signal game-ending events, keeping `processInput()` free of return codes.
 
+## Usage
+
+Run the compiled executable and enter sector numbers (0–8) to fish:
+
+```
+./fishing_simulator
+Enter sector (0-8): 3
+Empty! Try again.
+Enter sector (0-8): 7
+Success! Fish caught in 2 attempt(s).
+```
+
 ## Build
 1. Create build directory:
     - `mkdir build`
