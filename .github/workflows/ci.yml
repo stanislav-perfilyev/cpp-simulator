@@ -26,7 +26,7 @@ jobs:
       CXX: ${{ matrix.cxx }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install compiler
         run: |
@@ -47,7 +47,7 @@ jobs:
     name: ASAN+UBSAN
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Configure
         run: |
           cmake -B build_asan -DCMAKE_BUILD_TYPE=Debug \
@@ -61,7 +61,7 @@ jobs:
     name: cppcheck
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install cppcheck
         run: sudo apt-get install -y cppcheck
       - name: Run cppcheck
